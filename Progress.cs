@@ -14,8 +14,8 @@ namespace AzureFileUploader
         private readonly char progressBarEndChar = ')';
 
         private StringBuilder progressBar;
-        private int lastPercentage;
-        private int currentPace;
+        private int lastPercentage = 0;
+        private int currentPace = 0;
 
         public Progress(long fileLength, int pace = 5)
         {
@@ -31,19 +31,18 @@ namespace AzureFileUploader
 
         public void Report(long value)
         {
-            if (value == 0)
+            if (value == 0 && currentPace == 0)
             {
-                currentPace = 0;
                 Console.WriteLine(progressBar);
             }
 
             var percentage = (int)((value / (double)fileLength) * 100);
-            if (percentage > 0 && percentage != lastPercentage && percentage % pace == 0)
+            if (percentage > lastPercentage && percentage % pace == 0)
             {
                 currentPace++;
                 PrintProgress(currentPace);
+                lastPercentage = percentage;
             }
-            lastPercentage = percentage;
         }
 
 

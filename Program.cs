@@ -33,16 +33,20 @@ namespace AzureFileUploader
             Console.WriteLine("Successfully compressed files.");
             var compressTime = DateTime.Now - beginTime;
             Console.WriteLine($"Compress time: {compressTime.ToString(@"hh\:mm\:ss")}");
+            Console.WriteLine();
 
             var blobContainerClient = new BlobContainerClient(connectionString, azureBlobContainer);
             var blobClient = blobContainerClient.GetBlobClient(azureBlobName);
 
             var fileInfo = new FileInfo(tempPath);
-            var progress = new Progress(fileInfo.Length, pace: 1);
+            var fileSizeInMegabytes = fileInfo.Length / (double)(1024 * 1024);
+            Console.WriteLine($@"File name: ""{azureBlobName}""");
+            Console.WriteLine($"File size: {fileSizeInMegabytes.ToString("##.##")} MB");
 
             var beginUpload = DateTime.Now;
             Console.WriteLine();
-            Console.WriteLine("Uploading...");
+            Console.WriteLine($"Uploading ...");
+            var progress = new Progress(fileInfo.Length, pace: 1);
             using (var uploadFileStream = fileInfo.OpenRead())
             {
                 await blobClient.UploadAsync(uploadFileStream, progressHandler: progress);

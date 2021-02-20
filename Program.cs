@@ -20,8 +20,8 @@ namespace AzureFileUploader
             var tempPath = Path.Combine(path, @"..\AzureFileUploaderTemp.zip");
             var connectionString = Environment.GetEnvironmentVariable(configuration["Azure:ConnectionStringEnvironmentVariableName"]);
             var azureBlobContainer = configuration["Azure:BlobContainer"];
-            var azureBlobNamePrefix = string.IsNullOrWhiteSpace(configuration["Azure:BlobNamePrefix"]) ? string.Empty : configuration["Azure:BlobNamePrefix"] + "_";
-            var azureBlobName = azureBlobNamePrefix + DateTime.Now.ToString(@"yyyy-MM-dd_hh\h-mm\m") + ".zip";
+            var azureBlobNamePrefix = string.IsNullOrWhiteSpace(configuration["Azure:BlobNamePrefix"]) ? string.Empty : configuration["Azure:BlobNamePrefix"] + "__";
+            var azureBlobName = azureBlobNamePrefix + DateTime.Now.ToString(@"yyyy-MM-dd__HH\h-mm\m") + ".zip";
 
             var beginTime = DateTime.Now;
 
@@ -60,10 +60,6 @@ namespace AzureFileUploader
             var totalTime = endTime - beginTime;
             Console.WriteLine($"Upload time: {uploadTime.ToString(@"hh\:mm\:ss")}");
             Console.WriteLine($"Total time:  {totalTime.ToString(@"hh\:mm\:ss")}");
-
-            Console.WriteLine();
-            Console.WriteLine("Press Enter to exit.");
-            Console.ReadLine();
         }
     }
 }

@@ -17,17 +17,16 @@ namespace AzureFileUploader
                 .Build();
 
             var path = configuration["UploadAbsolutePath"];
-            var tempPath = Path.Combine(path, @"..\AzureFileUploaderTemp.zip");
+            var deleteCompressedFile = bool.Parse(configuration["DeleteCompressedFile"] ?? true.ToString());
             var connectionString = Environment.GetEnvironmentVariable(configuration["Azure:ConnectionStringEnvironmentVariableName"]);
             var azureBlobContainer = configuration["Azure:BlobContainer"];
             var azureBlobNamePrefix = string.IsNullOrWhiteSpace(configuration["Azure:BlobNamePrefix"]) ? string.Empty : configuration["Azure:BlobNamePrefix"] + "__";
             var azureBlobName = azureBlobNamePrefix + DateTime.Now.ToString(@"yyyy-MM-dd__HH\h-mm\m") + ".zip";
+            var tempPath = Path.Combine(path, @$"..\{azureBlobName}");
 
             var beginTime = DateTime.Now;
 
             Console.WriteLine("Compressing files...");
-            if (File.Exists(tempPath))
-                File.Delete(tempPath);
 
             ZipFile.CreateFromDirectory(path, tempPath, CompressionLevel.Fastest, includeBaseDirectory: false);
             Console.WriteLine("Successfully compressed files.");
@@ -51,7 +50,9 @@ namespace AzureFileUploader
             {
                 await blobClient.UploadAsync(uploadFileStream, progressHandler: progress);
             }
-            fileInfo.Delete();
+            if (deleteCompressedFile)
+                fileInfo.Delete();
+
             Console.WriteLine();
             Console.WriteLine("Successfully uploaded files.");
 
